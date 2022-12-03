@@ -1,7 +1,7 @@
 # randomApp
 
 Go to client:
-  run npm dev
+  npm run dev
   
   
   
