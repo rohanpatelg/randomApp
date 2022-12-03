@@ -12,9 +12,8 @@ const io = new Server(httpServer, {
  });
 io.on("connection", (socket) => {
   // ...
-  socket.on('message',(msg)=>io.emit('gg',msg));
-  
-  
+  socket.on('message',(msg)=>{
+    console.log("recieved msg");socket.emit('gg',msg);});
 });
 // app.use(cors({
 //     origin:'*'
