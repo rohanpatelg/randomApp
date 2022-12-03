@@ -1,16 +1,23 @@
 <script setup>
 
 import {onMounted, onUpdated, ref, watch} from 'vue';
-import {socketConnection,emitHi,isConnected} from '../src/services/index.js'
-socketConnection();
+import {socket} from '../src/services/index.js'
+
 const input = ref('');
-let chat =ref([]);
+let chat =ref();
+let history=[];
 async function emitSomething(){
-  console.log('HI')
-   chat.value=await emitHi(input.value);
-   input.value='';
-   console.log("no")
+  socket.emit('message',input.value)
 }
+onMounted(async ()=>{
+  socket.on('gg',(msg)=>{
+    console.log("Got gg");
+    history.push(msg);
+    console.log(history)
+    chat.value=msg;
+  })
+})
+
 
 </script>
 
@@ -22,8 +29,8 @@ async function emitSomething(){
           Click Me
         </button>
       </div>
-      <div v-if="chat.length">
-        {{chat[chat.length-1]}}
+      <div v-if="chat?.length">
+        {{chat}}
       </div>
     </div>
   

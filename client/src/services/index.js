@@ -1,35 +1,30 @@
 import axios from "axios";
 import { io } from "socket.io-client";
 
-let socket;
-let isConnected = false;
-let history = [];
-const get = async () => {
-  let res = await axios.get("http://localhost:3000");
-  return res.data;
-};
 
-const socketConnection = () => {
-  socket = io("http://localhost:3000");
-  console.log("1st");
-  socket.on("connect", () => {
-    isConnected = true;
-    console.log("client connected");
-  });
-};
+// const gglsiten = async()=>{
+//     return new Promise((resolve,reject)=>{
+//         socket.on("gg", (msg) => {   
+//             console.log("KK")
+//             history.push(msg);
+//             resolve(history);
+//           });
+//     })
+// }
 
-async function emitHi(input){
-  return new Promise(async (resolve, reject) => {
-    console.log("emitting");
-    await socket.emit("message", input);
-    await socket.once("gg", (msg) => {
-      console.log("inside client's gg");
-      history.push(msg);
-      console.log("history", history);
-      resolve(history)
-    });
+        let socket = io("http://localhost:3000");
+        console.log("1st");
+        
+
+// Async emit 
+// async function emitHi(input){
+//   return new Promise(async (resolve, reject) => {
+//     socket.emit("message", input);
+//     const h=await gglsiten()
+//     resolve(h);
     
-  });
-};
+//   });
+// };
 
-export { get, socketConnection, emitHi, isConnected };
+
+export { socket };
