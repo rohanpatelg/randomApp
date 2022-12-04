@@ -1,30 +1,19 @@
 import axios from "axios";
 import { io } from "socket.io-client";
 
+// This map will hold all the sockets corresponding to each namespaces
+let connections = new Map();
 
-// const gglsiten = async()=>{
-//     return new Promise((resolve,reject)=>{
-//         socket.on("gg", (msg) => {   
-//             console.log("KK")
-//             history.push(msg);
-//             resolve(history);
-//           });
-//     })
-// }
-
-        let socket = io("http://localhost:3000");
-        console.log("1st");
-        
-
-// Async emit 
-// async function emitHi(input){
-//   return new Promise(async (resolve, reject) => {
-//     socket.emit("message", input);
-//     const h=await gglsiten()
-//     resolve(h);
-    
-//   });
-// };
+// This function will create a new Namespace
+function createConnection(ns,url){
+        if(!connections.has(url)){
+                let socket = io(`http://localhost:3000${url}`);
+                console.log('new namespace has been created')
+                connections.set(url,socket);
+        }
+        return;
+}
 
 
-export { socket };
+
+export { connections,createConnection};
