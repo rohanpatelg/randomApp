@@ -4,7 +4,7 @@ import { connections } from '../services/index.js';
 
 
 onMounted(()=>{
-   console.log(connections.get('/'));
+   
 })
 </script>
 

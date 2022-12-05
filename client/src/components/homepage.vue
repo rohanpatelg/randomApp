@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {onBeforeUnmount, onMounted, onUnmounted, ref} from 'vue';
 import {connections,createConnection} from '../services/index';
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router';
 
@@ -8,6 +8,7 @@ const router=useRouter();
 const input = ref('');
 let url=ref('');
 let chats =ref([]);
+let code = ref('');
 
 // This will send msg to server (chat service)
 async function emitSomething(){
@@ -22,9 +23,18 @@ function createNamespace(){
   url.value = randomString(5);
   console.log(url);
   console.log(route.fullPath,"route");
-  connections.get(route.fullPath).emit('createRoom',url.value);
+  connections.get(route.fullPath).emit('createNamespace','/' + url.value);
   createConnection('','/'+url.value);
   console.log("created");
+}
+
+// check the typed code and go to the room
+
+async function checkCodeAndGoToRoom(){
+    console.log(code.value)
+      await connections.get('/').emit('joinNamespace',code.value);
+      router.push(`/rooms/${code.value}`);
+   
 }
 
 // Join the created namespace
@@ -37,7 +47,7 @@ onMounted(async ()=>{
   // On mounting the component create a connection with namespace
   createConnection('',route.fullPath);
   let socket = connections.get(route.fullPath);
-
+  console.log("client connected")
   // create a listner forchat service
   socket.on('gg',(msg)=>{
     console.log("Got gg");
@@ -51,12 +61,12 @@ onMounted(async ()=>{
 });
 
 // Before leaving to the new route destroy the socket corresponding to current route
-onBeforeRouteLeave(()=>{
-  console.log(connections.get('/'),route.fullPath);
+onBeforeUnmount(()=>{
+  console.log("LL ")
+  console.log(connections.get('/'),route.fullPath,"Leaving route");
   connections.get('/').close();
   connections.delete('/');
 })
-
 
 </script>
 
@@ -73,13 +83,20 @@ onBeforeRouteLeave(()=>{
       </div>
       
       <!-- create random string for url-->
-      <div class="w-full h-10 mt-2">
-        <button v-if="!url.length" class="w-[200px] rounded bg-green-400" @click="createNamespace()" >
+      <div class="w-full flex flex-col  mt-2">
+        <button v-if="!url.length" class="h-10 w-[200px] rounded bg-green-400" @click="createNamespace()" >
         Create a room    
       </button>
-      <button v-else @click="joinNamespace">
-        Join room
-      </button>
+      <div v-if="!url.length">OR</div>
+      <div class="flex gap-x-2 w-full" v-if="!url.length">
+        <input type="text" v-model="code" placeholder="Type code to join a room!!" class="p-2 border-2 border-gray-500 w-[240px] h-[40px]"/>
+        <button  class="h-10 w-[200px] rounded bg-green-400" @click="checkCodeAndGoToRoom">
+          Join room
+        </button>
+      </div>
+      <div v-if="url.length" @click="joinNamespace">
+      Join Room
+      </div>
       </div>
     </div>
   

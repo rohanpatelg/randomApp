@@ -4,9 +4,10 @@ import bodyParser from 'body-parser';
 import { createServer } from "http";
 import { Server } from "socket.io";
 import {User} from '../server/classes/user.js'
+import { createNamespace,onConnectAndDisconnect,namespaces} from './namespace.js';
 
 let users= [];
-let namespaces =[];
+
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, { 
@@ -15,25 +16,7 @@ const io = new Server(httpServer, {
     }
  });
 
-
-io.on("connection", (socket) => {
-  // ...
-  
-  socket.on('message',(msg)=>{
-    console.log("recieved msg");io.emit('gg',msg);
-  });
-  socket.on('disconnect',()=>{
-    socket.disconnect();
-      console.log("disconnected");
-  });
-  socket.on('createRoom',(url)=>{
-    console.log("recieved create room");
-    io.of(`/${url}`).on("connect", (socket) => {
-      console.log("Room created");
-  })
-  
-});
-});
+createNamespace('/',io);
 
 
 
